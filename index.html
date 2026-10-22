@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teste de Raciocínio - Prevenção de Perdas</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;padding:30px 12px 80px;
+  font-family:Tahoma,Verdana,Arial,sans-serif;font-size:13px;color:#000;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 120% 40% at 30% 100%, #4f9a2c 0%, #3d8a1f 55%, transparent 56%),
+    radial-gradient(ellipse 100% 35% at 90% 105%, #62b13a 0%, #4a9a26 55%, transparent 56%),
+    linear-gradient(#2f6fd6 0%, #6aa8f0 55%, #bfe0ff 100%);
+  background-attachment:fixed;
+}
+.window{
+  max-width:720px;margin:0 auto;
+  background:#ece9d8;
+  border:3px solid #0a3fc4;border-top:0;
+  border-radius:9px 9px 4px 4px;
+  box-shadow:4px 6px 18px rgba(0,0,0,.5);
+}
+.titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 6px 6px 10px;
+  background:linear-gradient(#3a8cff 0%,#0a5be0 12%,#0950d4 50%,#0a4bc8 88%,#0b3fa8 100%);
+  border-radius:8px 8px 0 0;margin:0 -3px;
+  color:#fff;font-weight:bold;font-size:14px;text-shadow:1px 1px 1px #0a2a80;
+}
+.titlebar .btns{display:flex;gap:3px;}
+.titlebar .btns span{
+  width:22px;height:22px;border:1px solid #fff;border-radius:4px;
+  background:linear-gradient(135deg,#6aa3ff,#1c5fe0);
+  font-size:12px;text-align:center;line-height:20px;text-shadow:none;
+}
+.titlebar .btns span.x{background:linear-gradient(135deg,#f0a08a,#d1401c);}
+.menubar{background:#ece9d8;border-bottom:1px solid #c7c3ae;padding:3px 8px;font-size:12px;}
+.menubar span{margin-right:14px;}
+.content{padding:16px;}
+.banner{
+  background:linear-gradient(90deg,#fff 0%,#dce8ff 100%);
+  border:1px solid #7f9db9;padding:10px 14px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+}
+.banner .icon{font-size:34px;}
+.banner .info{flex:1;}
+.banner h1{margin:0;font-size:17px;color:#0a2a80;}
+.banner p{margin:2px 0 0;font-size:12px;color:#444;}
+fieldset{
+  border:1px solid #919b9c;border-radius:4px;background:#fff;
+  margin:0 0 14px;padding:10px 14px 14px;
+}
+legend{color:#0046d5;font-weight:bold;padding:0 6px;}
+.field{margin-top:10px;}
+.field label{display:block;margin-bottom:3px;}
+input[type=text],input[type=email],input[type=tel]{
+  width:100%;padding:4px 6px;font:13px Tahoma,Verdana,sans-serif;
+  border:1px solid #7f9db9;background:#fff;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus{outline:1px solid #316ac5;}
+.question p{margin:0 0 8px;font-weight:bold;color:#222;}
+.question label{display:block;padding:3px 4px;cursor:pointer;border-radius:3px;}
+.question label:hover{background:#316ac5;color:#fff;}
+.question input{margin-right:6px;}
+.progress-wrap{margin:0 0 14px;}
+.progress{
+  height:16px;border:1px solid #7f9db9;background:#fff;padding:1px;
+}
+.progress div{
+  height:100%;width:0;
+  background:repeating-linear-gradient(90deg,#37d12c 0 8px,#fff 8px 10px);
+  transition:width .25s;
+}
+.progress-label{font-size:12px;margin-bottom:3px;}
+.xp-btn{
+  display:block;width:100%;margin-top:6px;padding:10px;
+  font:bold 15px Tahoma,Verdana,sans-serif;color:#fff;cursor:pointer;
+  border:1px solid #1a6b0e;border-radius:12px;
+  background:linear-gradient(#6fd45a 0%,#3ea82b 50%,#2d8f1c 100%);
+  text-shadow:1px 1px 1px #145a0a;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.xp-btn:hover{filter:brightness(1.1);}
+.xp-btn:active{filter:brightness(.9);}
+.erro{
+  display:none;margin:0 0 10px;padding:8px 10px;
+  background:#fff4c4;border:1px solid #c8a000;color:#7a4f00;
+}
+#resultado{
+  display:none;margin-top:14px;padding:10px 14px;
+  background:#fffbe0;border:1px solid #7f9db9;
+}
+.statusbar{
+  border-top:1px solid #c7c3ae;background:#ece9d8;padding:4px 10px;
+  font-size:11px;color:#444;
+}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <span>📋 Teste de Raciocínio Lógico.exe</span>
+    <div class="btns"><span>_</span><span>▢</span><span class="x">✕</span></div>
+  </div>
+  <div class="menubar"><span>Arquivo</span><span>Editar</span><span>Exibir</span><span>Ajuda</span></div>
+
+  <div class="content">
+    <div class="banner">
+      <div class="icon">🛡️</div>
+      <div class="info">
+        <h1>Avaliação - Prevenção de Perdas</h1>
+        <p>Preencha seus dados, responda as 10 perguntas e baixe o PDF com seu resultado.</p>
+      </div>
+    </div>
+
+    <form id="testeForm">
+      <fieldset>
+        <legend>Seus dados</legend>
+        <div class="field"><label for="nome">Nome completo:</label><input type="text" id="nome"></div>
+        <div class="field"><label for="cpf">CPF:</label><input type="text" id="cpf"></div>
+        <div class="field"><label for="telefone">Telefone:</label><input type="tel" id="telefone"></div>
+        <div class="field"><label for="email">E-mail:</label><input type="email" id="email"></div>
+      </fieldset>
+
+      <div class="progress-wrap">
+        <div class="progress-label" id="progLabel">Progresso: 0 de 10 respondidas</div>
+        <div class="progress"><div id="progBar"></div></div>
+      </div>
+
+      <fieldset class="question">
+        <legend>Pergunta 1</legend>
+        <p>Qual o próximo número da sequência: 5, 10, 15, 20, ___ ?</p>
+        <label><input type="radio" name="q1" value="20"> 20</label>
+        <label><input type="radio" name="q1" value="25"> 25</label>
+        <label><input type="radio" name="q1" value="30"> 30</label>
+        <label><input type="radio" name="q1" value="22"> 22</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 2</legend>
+        <p>Na conferência de lote, os produtos seguem a ordem: 101, 102, 103, 105, 106. O que há de errado?</p>
+        <label><input type="radio" name="q2" value="104"> Falta o número 104</label>
+        <label><input type="radio" name="q2" value="100"> Falta o número 100</label>
+        <label><input type="radio" name="q2" value="107"> Falta o número 107</label>
+        <label><input type="radio" name="q2" value="nada"> Nada, a sequência está completa</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 3</legend>
+        <p>Um pedido de 480 caixas será organizado em pilhas de 8 caixas. Quantas pilhas serão formadas?</p>
+        <label><input type="radio" name="q3" value="40"> 40</label>
+        <label><input type="radio" name="q3" value="60"> 60</label>
+        <label><input type="radio" name="q3" value="48"> 48</label>
+        <label><input type="radio" name="q3" value="80"> 80</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 4</legend>
+        <p>Um caminhão leva 3 horas para descarregar 12 pallets. Quanto tempo leva para descarregar 24 pallets, na mesma velocidade?</p>
+        <label><input type="radio" name="q4" value="4"> 4 horas</label>
+        <label><input type="radio" name="q4" value="5"> 5 horas</label>
+        <label><input type="radio" name="q4" value="6"> 6 horas</label>
+        <label><input type="radio" name="q4" value="8"> 8 horas</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 5</legend>
+        <p>Qual das palavras abaixo é diferente das demais?</p>
+        <label><input type="radio" name="q5" value="pallet"> Pallet</label>
+        <label><input type="radio" name="q5" value="empilhadeira"> Empilhadeira</label>
+        <label><input type="radio" name="q5" value="caminhão"> Caminhão</label>
+        <label><input type="radio" name="q5" value="estoque"> Estoque</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 6</legend>
+        <p>Observe os códigos abaixo e encontre o erro: A123, A124, A125, A127, A128.</p>
+        <label><input type="radio" name="q6" value="A126"> Falta o código A126</label>
+        <label><input type="radio" name="q6" value="A129"> Falta o código A129</label>
+        <label><input type="radio" name="q6" value="nada"> Não há erro</label>
+        <label><input type="radio" name="q6" value="A122"> Falta o código A122</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 7</legend>
+        <p>Um funcionário conferiu 20 caixas pela manhã, 35 à tarde e 25 à noite. Quantas caixas foram conferidas no total?</p>
+        <label><input type="radio" name="q7" value="70"> 70</label>
+        <label><input type="radio" name="q7" value="75"> 75</label>
+        <label><input type="radio" name="q7" value="80"> 80</label>
+        <label><input type="radio" name="q7" value="85"> 85</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 8</legend>
+        <p>Um pallet suporta no máximo 1.200 kg. Cada caixa pesa 50 kg. Quantas caixas podem ser empilhadas sem ultrapassar o limite?</p>
+        <label><input type="radio" name="q8" value="20"> 20</label>
+        <label><input type="radio" name="q8" value="22"> 22</label>
+        <label><input type="radio" name="q8" value="24"> 24</label>
+        <label><input type="radio" name="q8" value="26"> 26</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 9</legend>
+        <p>Qual é o erro da sequência abaixo? E1, E2, E3, E5, E6, E7.</p>
+        <label><input type="radio" name="q9" value="E4"> Falta o E4</label>
+        <label><input type="radio" name="q9" value="E8"> Falta o E8</label>
+        <label><input type="radio" name="q9" value="nada"> Não há erro</label>
+        <label><input type="radio" name="q9" value="E0"> Falta o E0</label>
+      </fieldset>
+
+      <fieldset class="question">
+        <legend>Pergunta 10</legend>
+        <p>Um pedido de 5.000 unidades será separado em caixas de 250 unidades cada. Quantas caixas serão necessárias?</p>
+        <label><input type="radio" name="q10" value="15"> 15</label>
+        <label><input type="radio" name="q10" value="18"> 18</label>
+        <label><input type="radio" name="q10" value="20"> 20</label>
+        <label><input type="radio" name="q10" value="25"> 25</label>
+      </fieldset>
+
+      <div class="erro" id="erroMsg">⚠️ Preencha todos os campos e responda todas as perguntas antes de gerar o PDF.</div>
+      <button type="button" class="xp-btn" onclick="gerarPDF()">▶ Finalizar e baixar PDF</button>
+    </form>
+
+    <div id="resultado"></div>
+  </div>
+  <div class="statusbar">Pronto</div>
+</div>
+
+<script>
+const respostasCorretas = {
+  q1: "25", q2: "104", q3: "60", q4: "6", q5: "caminhão",
+  q6: "A126", q7: "80", q8: "24", q9: "E4", q10: "20"
+};
+
+const enunciados = {
+  q1: "Próximo número da sequência 5, 10, 15, 20",
+  q2: "Número faltante na conferência de lote 101 a 106",
+  q3: "Pilhas formadas com 480 caixas em grupos de 8",
+  q4: "Tempo para descarregar 24 pallets",
+  q5: "Palavra diferente entre pallet, empilhadeira, caminhão, estoque",
+  q6: "Código faltante entre A123 e A128",
+  q7: "Total de caixas conferidas no dia",
+  q8: "Caixas de 50 kg em um pallet de 1.200 kg",
+  q9: "Erro na sequência E1 a E7",
+  q10: "Caixas necessárias para 5.000 unidades em lotes de 250"
+};
+
+const WHATSAPP_LINK = "https://wa.me/5541997624762";
+
+function criarQR(elemento, tamanho){
+  return new QRCode(elemento, {
+    text: WHATSAPP_LINK,
+    width: tamanho,
+    height: tamanho,
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+function atualizarProgresso(){
+  let n = 0;
+  for(let i = 1; i <= 10; i++){
+    if(document.querySelector('input[name="q' + i + '"]:checked')) n++;
+  }
+  document.getElementById('progBar').style.width = (n * 10) + '%';
+  document.getElementById('progLabel').textContent = 'Progresso: ' + n + ' de 10 respondidas';
+}
+document.getElementById('testeForm').addEventListener('change', atualizarProgresso);
+
+function gerarPDF(){
+  const nome = document.getElementById('nome').value.trim();
+  const cpf = document.getElementById('cpf').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const erroEl = document.getElementById('erroMsg');
+
+  if(!nome || !cpf || !telefone || !email){
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  let pontuacao = 0;
+  const linhas = [];
+
+  for(let i = 1; i <= 10; i++){
+    const campo = 'q' + i;
+    const sel = document.querySelector('input[name="' + campo + '"]:checked');
+    if(!sel){
+      erroEl.style.display = 'block';
+      return;
+    }
+    const acertou = sel.value === respostasCorretas[campo];
+    if(acertou) pontuacao++;
+    linhas.push({
+      numero: i,
+      enunciado: enunciados[campo],
+      respondeu: sel.parentElement.textContent.trim(),
+      status: acertou ? "CORRETA" : "INCORRETA"
+    });
+  }
+
+  erroEl.style.display = 'none';
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 15;
+
+  doc.setFontSize(14);
+  doc.text("Resultado do Teste de Raciocínio Lógico", 15, y); y += 8;
+
+  doc.setFontSize(10);
+  doc.setFont(undefined, "bold");
+  const aviso = doc.splitTextToSize(
+    "AVISO AO CANDIDATO: envie este PDF para o e-mail do gestor da vaga (jho1995jho@gmail.com) ou para o telefone 41-997624762 e aguarde o contato para dar continuidade no processo da vaga.",
+    140
+  );
+  doc.text(aviso, 15, y);
+
+  try {
+    const tmp = document.createElement('div');
+    criarQR(tmp, 200);
+    const canvas = tmp.querySelector('canvas');
+    doc.addImage(canvas.toDataURL('image/png'), 'PNG', 162, 8, 33, 33);
+    doc.setFontSize(7);
+    doc.text("WhatsApp do gestor", 162, 44);
+    doc.setFontSize(10);
+  } catch (e) {}
+  y += aviso.length * 5 + 6;
+  doc.setFont(undefined, "normal");
+
+  doc.setFontSize(11);
+  doc.text("Nome: " + nome, 15, y); y += 7;
+  doc.text("CPF: " + cpf, 15, y); y += 7;
+  doc.text("Telefone: " + telefone, 15, y); y += 7;
+  doc.text("E-mail: " + email, 15, y); y += 10;
+
+  doc.setFontSize(12);
+  doc.text("Pontuação final: " + pontuacao + " de 10", 15, y); y += 10;
+
+  doc.setFontSize(10);
+  linhas.forEach(function(l){
+    if(y > 270){ doc.addPage(); y = 15; }
+    const bloco = doc.splitTextToSize(l.numero + ". " + l.enunciado, 180);
+    doc.text(bloco, 15, y);
+    y += bloco.length * 6;
+    doc.text("Resposta: " + l.respondeu + "  -  " + l.status, 20, y);
+    y += 8;
+  });
+
+  doc.save("resultado_teste_" + nome.replace(/\s+/g, '_') + ".pdf");
+
+  const res = document.getElementById('resultado');
+  res.style.display = 'block';
+  res.innerHTML = "<p>✅ PDF gerado com sucesso! Pontuação: " + pontuacao + " de 10.</p>" +
+    "<p>Envie o PDF para o e-mail do gestor da vaga (jho1995jho@gmail.com) ou para o telefone 41-997624762 e aguarde o contato para dar continuidade no processo.</p>";
+  res.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
